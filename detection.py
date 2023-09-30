@@ -131,7 +131,7 @@ def show_tracked_img(img_dict, ip_set, num_matched, output_video, args):
         filename = "fall_detected_video.mp4"
         output_video = cv2.VideoWriter(
             filename=filename,
-            fourcc=0,
+            fourcc=cv2.VideoWriter_fourcc(*"mp4v"),
             fps=args.fps,
             frameSize=img.shape[:2][::-1],
         )

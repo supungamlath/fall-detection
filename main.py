@@ -64,7 +64,7 @@ def handleImageSequence():
 
             video = cv2.VideoWriter(
                 sequence_video_name,
-                0,
+                cv2.VideoWriter_fourcc(*"mp4v"),
                 fps,
                 (width, height),
             )
