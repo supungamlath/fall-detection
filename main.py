@@ -124,8 +124,9 @@ def handleCamera():
     st.markdown(
         """
         Select a Camera from your device and press Start to run the Fall Detection algorithm in real-time. 
+        Please move a few steps away from the camera to ensure the entire body is visible.
         
-        Please note that the output frame rate will be limited by the processing power of the free Streamlit server.
+        Note that the output frame rate will be limited by the processing power of the free Streamlit server.
         """
     )
     st.subheader("Live Fall Detection")
