@@ -62,7 +62,12 @@ def handleImageSequence():
             frame = cv2.imread(os.path.join(dir, images[0]))
             height, width, layers = frame.shape
 
-            video = cv2.VideoWriter(sequence_video_name, 0, fps, (width, height))
+            video = cv2.VideoWriter(
+                sequence_video_name,
+                0,
+                fps,
+                (width, height),
+            )
 
             for image in images:
                 video.write(cv2.imread(os.path.join(dir, image)))

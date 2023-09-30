@@ -173,6 +173,7 @@ def detect_with_lstm(queue, args, event):
                 dict_frame, ip_set, num_matched, output_video, args
             )
 
+    output_video.release()
     del model
     return
 
