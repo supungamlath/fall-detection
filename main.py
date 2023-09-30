@@ -136,8 +136,7 @@ def handleCamera():
         key="fall-detection",
         mode=WebRtcMode.SENDRECV,
         rtc_configuration={
-            "iceServers": [{"urls": ["stun.hosteurope.de:3478"]}],
-            "iceTransportPolicy": "relay",
+            "iceServers": [{"urls": ["stun:stun3.l.google.com:19302"]}],
         },
         video_frame_callback=camera_detector.process_frame,
         media_stream_constraints={"video": True, "audio": False},
