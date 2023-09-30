@@ -1,4 +1,3 @@
-import time
 import openpifpaf
 import PIL
 import torch
