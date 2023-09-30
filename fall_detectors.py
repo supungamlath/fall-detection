@@ -1,8 +1,10 @@
 import torch
 import torch.multiprocessing as mp
 import logging
+import av
 from constants import *
 from detection import *
+from model.model import LSTMModel
 
 try:
     mp.set_start_method("spawn")
@@ -18,7 +20,24 @@ class Arguments:
             self.device = torch.device("cuda")
 
 
-class FallDetector:
+class LiveFallDetector:
+    def __init__(self):
+        self.args = Arguments()
+        self.model = LSTMModel(hidden_dim=48, num_layers=2, dropout=0.1, num_classes=7)
+        self.model.load_state_dict(
+            torch.load("model/lstm_weights.sav", map_location=self.args.device)
+        )
+        self.model.eval()
+        logging.basicConfig(level=logging.ERROR)
+
+    def process_frame(self, frame):
+        img = frame.to_ndarray(format="bgr24")
+        img = cv2.flip(img, 0)
+        image = extract_pose_detect_fall(img, self.model, self.args)
+        return av.VideoFrame.from_ndarray(image, format="bgr24")
+
+
+class VideoFallDetector:
     def __init__(self):
         self.args = Arguments()
         logging.basicConfig(level=logging.INFO)

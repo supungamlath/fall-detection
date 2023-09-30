@@ -4,7 +4,8 @@ import cv2
 import os
 import zipfile
 import moviepy.editor as moviepy
-from fall_detectors import FallDetector
+from fall_detectors import VideoFallDetector, LiveFallDetector
+from streamlit_webrtc import WebRtcMode, webrtc_streamer
 
 
 def showVideo(video_name):
@@ -20,7 +21,7 @@ def showVideo(video_name):
 
 
 def runFallDetector(video_name, fps):
-    fall_detector = FallDetector()
+    fall_detector = VideoFallDetector()
     st.subheader("Fall Detection")
     with st.spinner("Processing video..."):
         fall_detector.begin(video_name, fps)
@@ -118,6 +119,17 @@ def handleVideoFile():
         runFallDetector("input_video.mp4", fps)
 
 
+def handleCamera():
+    camera_detector = LiveFallDetector()
+    webrtc_ctx = webrtc_streamer(
+        key="fall-detection",
+        mode=WebRtcMode.SENDRECV,
+        video_frame_callback=camera_detector.process_frame,
+        media_stream_constraints={"video": True, "audio": False},
+        async_processing=True,
+    )
+
+
 def handleDemoVideo():
     st.markdown(
         """
@@ -185,7 +197,7 @@ def main():
 
     st.sidebar.title("Select Mode")
     choice = st.sidebar.selectbox(
-        "Mode", ("Home", "Demo Video", "Image Sequence", "Video File")
+        "Mode", ("Home", "Demo Video", "Device Camera", "Image Sequence", "Video File")
     )
     st.sidebar.markdown("Select a mode to begin")
 
@@ -202,6 +214,9 @@ def main():
         datasets_body.empty()
         ref_title.empty()
         ref_body.empty()
+
+    if choice == "Device Camera":
+        handleCamera()
 
     if choice == "Image Sequence":
         handleImageSequence()

@@ -12,11 +12,6 @@ from constants import *
 from model.model import LSTMModel
 
 
-def get_source(source_file):
-    cam = cv2.VideoCapture(source_file)
-    return cam
-
-
 def resize(img):
     # Resize the video
     height, width = img.shape[:2]
@@ -29,7 +24,7 @@ def resize(img):
 
 def extract_pose_keyframes_mp(queue, video_path, args, event):
     try:
-        video = get_source(video_path)
+        video = cv2.VideoCapture(video_path)
         ret_val, img = video.read()
     except Exception as e:
         queue.put(None)
@@ -61,7 +56,6 @@ def extract_pose_keyframes_mp(queue, video_path, args, event):
         if bb_list:
             assert type(bb_list[0]) == tuple
             assert type(bb_list[0][0]) == tuple
-        # assume bb_list is a of the form [(x1,y1),(x2,y2)),etc.]
 
         anns = [get_kp(keypoints.tolist()) for keypoints in keypoint_sets]
         ubboxes = [
@@ -110,7 +104,7 @@ def extract_pose_keyframes_mp(queue, video_path, args, event):
     return
 
 
-def show_tracked_img(img_dict, ip_set, num_matched, output_video, args):
+def show_tracked_img(img_dict, ip_set, num_matched):
     img = img_dict["img"]
     tagged_df = img_dict["tagged_df"]
     keypoints_frame = [person[-1] for person in ip_set]
@@ -124,17 +118,7 @@ def show_tracked_img(img_dict, ip_set, num_matched, output_video, args):
 
     img = write_on_image(img=img, text=tagged_df["text"], color=tagged_df["color"])
 
-    if output_video is None:
-        filename = "fall_detected_video.mp4"
-        output_video = cv2.VideoWriter(
-            filename=filename,
-            fourcc=cv2.VideoWriter_fourcc(*"mp4v"),
-            fps=args.fps,
-            frameSize=img.shape[:2][::-1],
-        )
-    else:
-        output_video.write(img)
-    return img, output_video
+    return img
 
 
 def detect_with_lstm_mp(queue, args, event):
@@ -158,6 +142,15 @@ def detect_with_lstm_mp(queue, args, event):
                     event.set()
                 break
 
+            if output_video is None:
+                filename = "fall_detected_video.mp4"
+                output_video = cv2.VideoWriter(
+                    filename=filename,
+                    fourcc=cv2.VideoWriter_fourcc(*"mp4v"),
+                    fps=args.fps,
+                    frameSize=(dict_frame["width"], dict_frame["height"]),
+                )
+
             kp_frame = dict_frame["keypoint_sets"]
             num_matched, new_num, indxs_unmatched = match_ip(
                 ip_set, kp_frame, lstm_set, num_matched, max_length_mat
@@ -166,13 +159,76 @@ def detect_with_lstm_mp(queue, args, event):
             text, color = activity_name(prediction + 5)
             dict_frame["tagged_df"]["text"] = text
             dict_frame["tagged_df"]["color"] = color
-            img, output_video = show_tracked_img(
-                dict_frame, ip_set, num_matched, output_video, args
-            )
+            img = show_tracked_img(dict_frame, ip_set, num_matched)
+            output_video.write(img)
 
     output_video.release()
     del model
     return
+
+
+def extract_pose_detect_fall(img, model, args):
+    width, height, width_height = resize(img)
+    processor_singleton = Processor(width_height, args)
+
+    img = cv2.resize(img, (width, height))
+    hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    keypoint_sets, bb_list, width_height = processor_singleton.single_image(img)
+    assert bb_list is None or (type(bb_list) == list)
+    if bb_list:
+        assert type(bb_list[0]) == tuple
+        assert type(bb_list[0][0]) == tuple
+
+    anns = [get_kp(keypoints.tolist()) for keypoints in keypoint_sets]
+    ubboxes = [
+        (np.asarray([width, height]) * np.asarray(ann[1])).astype("int32")
+        for ann in anns
+    ]
+    lbboxes = [
+        (np.asarray([width, height]) * np.asarray(ann[2])).astype("int32")
+        for ann in anns
+    ]
+    bbox_list = [
+        (np.asarray([width, height]) * np.asarray(box)).astype("int32")
+        for box in bb_list
+    ]
+    uhist_list = [get_hist(hsv_img, bbox) for bbox in ubboxes]
+    lhist_list = [get_hist(img, bbox) for bbox in lbboxes]
+    keypoint_sets = [
+        {
+            "keypoints": keyp[0],
+            "up_hist": uh,
+            "lo_hist": lh,
+            "box": box,
+        }
+        for keyp, uh, lh, box in zip(anns, uhist_list, lhist_list, bbox_list)
+    ]
+
+    cv2.polylines(img, ubboxes, True, (255, 0, 0), 2)
+    cv2.polylines(img, lbboxes, True, (0, 255, 0), 2)
+    for box in bbox_list:
+        cv2.rectangle(img, tuple(box[0]), tuple(box[1]), ((0, 0, 255)), 2)
+
+    ip_set = []
+    lstm_set = []
+    max_length_mat = DEFAULT_CONSEC_FRAMES
+    num_matched = 0
+
+    kp_frame = keypoint_sets
+    num_matched, new_num, indxs_unmatched = match_ip(
+        ip_set, kp_frame, lstm_set, num_matched, max_length_mat
+    )
+    valid1_idxs, prediction = get_all_features(ip_set, lstm_set, model)
+    text, color = activity_name(prediction + 5)
+    dict_vis = {
+        "tagged_df": {
+            "text": text,
+            "color": color,
+        },
+    }
+    img = show_tracked_img(dict_vis, ip_set, num_matched)
+
+    return img
 
 
 def get_all_features(ip_set, lstm_set, model):
