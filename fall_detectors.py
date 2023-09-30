@@ -23,6 +23,7 @@ class Arguments:
 class LiveFallDetector:
     def __init__(self):
         self.args = Arguments()
+        self.flip_video = False
         self.model = LSTMModel(hidden_dim=48, num_layers=2, dropout=0.1, num_classes=7)
         self.model.load_state_dict(
             torch.load("model/lstm_weights.sav", map_location=self.args.device)
@@ -30,9 +31,13 @@ class LiveFallDetector:
         self.model.eval()
         logging.basicConfig(level=logging.ERROR)
 
+    def set_flip(self, flip):
+        self.flip_video = flip
+
     def process_frame(self, frame):
         img = frame.to_ndarray(format="bgr24")
-        img = cv2.flip(img, 1)
+        if self.flip_video:
+            img = cv2.flip(img, 1)
         image = extract_pose_detect_fall(img, self.model, self.args)
         return av.VideoFrame.from_ndarray(image, format="bgr24")
 
