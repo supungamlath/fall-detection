@@ -121,6 +121,16 @@ def handleVideoFile():
 
 def handleCamera():
     camera_detector = LiveFallDetector()
+    st.markdown(
+        """
+        Select a Camera from your device and press Start to run the Fall Detection algorithm in real-time. 
+        
+        Please note that the output frame rate will be limited by the processing power of the free Streamlit server.
+        """
+    )
+    st.subheader("Live Fall Detection")
+    flip_video = st.toggle("Flip Video")
+    camera_detector.set_flip(flip_video)
     webrtc_ctx = webrtc_streamer(
         key="fall-detection",
         mode=WebRtcMode.SENDRECV,
