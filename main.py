@@ -40,7 +40,7 @@ def handleImageSequence():
     )
     fps = st.slider("Frames Per Second (FPS)", 1, 60, 21)
     if uploaded_zip is not None:
-        st.subheader("Video Preview")
+        st.subheader("Input Video")
 
         os.makedirs("images", exist_ok=True)
         tmp_dir = tempfile.TemporaryDirectory()
@@ -107,7 +107,7 @@ def handleVideoFile():
     if uploaded_video is not None:
         video_name = uploaded_video.name
 
-        st.subheader("Video Preview")
+        st.subheader("Input Video")
         with st.spinner("Converting video..."):
             with open(video_name, mode="wb") as f:
                 f.write(uploaded_video.read())  # save video to disk
@@ -121,7 +121,7 @@ def handleVideoFile():
 
 
 def handleDemoVideo():
-    st.subheader("Video Preview")
+    st.subheader("Input Video")
     showVideo("demo_video_in.mp4")
     st.subheader("Fall Detection")
     showVideo("demo_video_fd.mp4")
@@ -132,6 +132,7 @@ def main():
         "<h1 style='text-align: center;'>Fall Detection App</h1>",
         unsafe_allow_html=True,
     )
+    st.markdown("By: [Supun Gamlath](https://github.com/supungamlath)")
     desc_title = st.subheader("Description")
     desc_body = st.markdown(
         """
@@ -176,12 +177,18 @@ def main():
         """
     )
 
-    st.sidebar.title("Select Video Source")
+    st.sidebar.title("Select Mode")
     choice = st.sidebar.selectbox(
-        "MODE", ("None", "Demo Video", "Image Sequence", "Video File")
+        "Mode", ("Home", "Demo Video", "Image Sequence", "Video File")
     )
 
-    if choice != "None":
+    # st.sidebar.text("Demo Video - Watch a video of Fall Detection in action")
+    # st.sidebar.text(
+    #     "Image Sequence - Upload a zip file containing a sequence of images"
+    # )
+    # st.sidebar.text("Video File - Upload a video file")
+
+    if choice != "Home":
         desc_title.empty()
         desc_body.empty()
         datasets_title.empty()
@@ -197,9 +204,6 @@ def main():
 
     elif choice == "Demo Video":
         handleDemoVideo()
-
-    elif choice == "None":
-        pass
 
 
 if __name__ == "__main__":
