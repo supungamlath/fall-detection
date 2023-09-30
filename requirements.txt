@@ -10,7 +10,7 @@ idna
 kiwisolver
 matplotlib>=3.3.1
 numpy>=1.19.1
-opencv-python
+opencv-python-headless
 openpifpaf==0.12.9
 pandas>=1.1.1
 Pillow>=7.2.0
