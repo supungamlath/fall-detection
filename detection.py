@@ -148,7 +148,7 @@ def detect_with_lstm_mp(queue, args, event):
                     filename=filename,
                     fourcc=cv2.VideoWriter_fourcc(*"mp4v"),
                     fps=args.fps,
-                    frameSize=(dict_frame["width"], dict_frame["height"]),
+                    frameSize=(dict_frame["width"], int(1.1 * dict_frame["height"])),
                 )
 
             kp_frame = dict_frame["keypoint_sets"]
