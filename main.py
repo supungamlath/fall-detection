@@ -119,6 +119,14 @@ def handleVideoFile():
 
 
 def handleDemoVideo():
+    st.markdown(
+        """
+        The Input Video is the input to the app, the Fall Detection video shows the algorithm in action. 
+        
+        The skeleton and bounding boxes are drawn using pose information from Openpifpaf. 
+        The header over the Fall Detection Video shows the result of LSTM classification model for each frame.
+        """
+    )
     st.subheader("Input Video")
     showVideo("demo_video_in.mp4")
     st.subheader("Fall Detection")
@@ -179,6 +187,7 @@ def main():
     choice = st.sidebar.selectbox(
         "Mode", ("Home", "Demo Video", "Image Sequence", "Video File")
     )
+    st.sidebar.markdown("Select a mode to begin")
 
     # st.sidebar.text("Demo Video - Watch a video of Fall Detection in action")
     # st.sidebar.text(
