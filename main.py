@@ -42,7 +42,6 @@ def handleImageSequence():
     if uploaded_zip is not None:
         st.subheader("Input Video")
 
-        os.makedirs("images", exist_ok=True)
         tmp_dir = tempfile.TemporaryDirectory()
         with st.spinner("Converting to video..."):
             sequence_video_name = "sequence_video.mp4"
