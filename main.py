@@ -124,6 +124,7 @@ def handleCamera():
     webrtc_ctx = webrtc_streamer(
         key="fall-detection",
         mode=WebRtcMode.SENDRECV,
+        rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
         video_frame_callback=camera_detector.process_frame,
         media_stream_constraints={"video": True, "audio": False},
         async_processing=True,
