@@ -27,7 +27,7 @@ def resize(img):
     return width, height, width_height
 
 
-def extract_pose_keyframes(queue, video_path, args, event):
+def extract_pose_keyframes_mp(queue, video_path, args, event):
     try:
         video = get_source(video_path)
         ret_val, img = video.read()
@@ -137,7 +137,7 @@ def show_tracked_img(img_dict, ip_set, num_matched, output_video, args):
     return img, output_video
 
 
-def detect_with_lstm(queue, args, event):
+def detect_with_lstm_mp(queue, args, event):
     model = LSTMModel(hidden_dim=48, num_layers=2, dropout=0.1, num_classes=7)
     model.load_state_dict(
         torch.load("model/lstm_weights.sav", map_location=args.device)

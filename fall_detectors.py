@@ -29,13 +29,13 @@ class FallDetector:
         queue = mp.Queue()
 
         process1 = mp.Process(
-            target=extract_pose_keyframes,
+            target=extract_pose_keyframes_mp,
             args=(queue, video_path, self.args, e),
         )
         process1.start()
 
         process2 = mp.Process(
-            target=detect_with_lstm,
+            target=detect_with_lstm_mp,
             args=(queue, self.args, e),
         )
         process2.start()
