@@ -11,7 +11,9 @@ def showVideo(video_name):
     try:
         st_video = open(video_name, "rb")
         video_bytes = st_video.read()
-        st.video(video_bytes)
+        st.video(
+            video_bytes,
+        )
 
     except OSError:
         """Error loading video file"""
@@ -24,7 +26,12 @@ def runFallDetector(video_name, fps):
         fall_detector.begin(video_name, fps)
     st.success("Done!")
 
-    showVideo("fall_detected_video.mp4")
+    clip = moviepy.VideoFileClip("fall_detected_video.mp4")
+    clip.write_videofile("converted_video_out.mp4", fps=fps)
+    showVideo("converted_video_out.mp4")
+
+    os.remove("fall_detected_video.mp4")
+    os.remove("converted_video_out.mp4")
 
 
 def handleImageSequence():
@@ -72,7 +79,7 @@ def handleImageSequence():
             for image in images:
                 video.write(cv2.imread(os.path.join(dir, image)))
 
-            # cv2.destroyAllWindows()
+            cv2.destroyAllWindows()
             video.release()
             tmp_dir.cleanup()
 

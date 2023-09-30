@@ -1,4 +1,5 @@
 __pycache__/
+.vscode/
 images/
 sequence_video.mp4
 input_video.mp4

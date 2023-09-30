@@ -22,26 +22,25 @@ class FallDetector:
     def __init__(self):
         self.args = Arguments()
         logging.basicConfig(level=logging.INFO)
-        self.e = mp.Event()
-        self.queue = mp.Queue()
-        self.progress = mp.Value("i", 0)
 
     def begin(self, video_path, fps):
         self.args.fps = fps
+        e = mp.Event()
+        queue = mp.Queue()
 
-        self.process1 = mp.Process(
+        process1 = mp.Process(
             target=extract_pose_keyframes,
-            args=(self.queue, video_path, self.args, self.e),
+            args=(queue, video_path, self.args, e),
         )
-        self.process2 = mp.Process(
+        process1.start()
+
+        process2 = mp.Process(
             target=detect_with_lstm,
-            args=(self.queue, self.args, self.e),
+            args=(queue, self.args, e),
         )
+        process2.start()
 
-        self.process1.start()
-        self.process2.start()
-
-        self.process1.join()
-        self.process2.join()
+        process1.join()
+        process2.join()
 
         return

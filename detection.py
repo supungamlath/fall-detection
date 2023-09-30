@@ -13,10 +13,7 @@ from model.model import LSTMModel
 
 
 def get_source(source_file):
-    logging.debug(f"Video source: {source_file}")
     cam = cv2.VideoCapture(source_file)
-    img = cam.read()[1]
-    logging.debug("Image shape:", img.shape)
     return cam
 
 
