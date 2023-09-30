@@ -158,11 +158,16 @@ def handleDemoVideo():
 
 
 def main():
+    st.set_page_config(
+        page_title="Fall Detection App by Supun Gamlath",
+        page_icon="🤖",
+    )
     st.markdown(
         "<h1 style='text-align: center;'>Fall Detection App</h1>",
         unsafe_allow_html=True,
     )
-    st.markdown("By: [Supun Gamlath](https://github.com/supungamlath)")
+    st.markdown("Created by: [Supun Gamlath](https://github.com/supungamlath)")
+    inst_text = st.text("⬅️ Select a Mode from the Sidebar to begin.")
     desc_title = st.subheader("Description")
     desc_body = st.markdown(
         """
@@ -220,6 +225,7 @@ def main():
     # st.sidebar.text("Video File - Upload a video file")
 
     if choice != "Home":
+        inst_text.empty()
         desc_title.empty()
         desc_body.empty()
         datasets_title.empty()
