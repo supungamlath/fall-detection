@@ -3,7 +3,6 @@ torch>=1.6.0
 torchvision>=0.7.0
 openpifpaf==0.12.9
 moviepy
-zipfile
 boto
 certifi
 chardet
