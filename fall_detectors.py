@@ -32,7 +32,7 @@ class LiveFallDetector:
 
     def process_frame(self, frame):
         img = frame.to_ndarray(format="bgr24")
-        img = cv2.flip(img, 0)
+        img = cv2.flip(img, 1)
         image = extract_pose_detect_fall(img, self.model, self.args)
         return av.VideoFrame.from_ndarray(image, format="bgr24")
 

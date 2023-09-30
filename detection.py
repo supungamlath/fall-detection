@@ -209,6 +209,16 @@ def extract_pose_detect_fall(img, model, args):
     for box in bbox_list:
         cv2.rectangle(img, tuple(box[0]), tuple(box[1]), ((0, 0, 255)), 2)
 
+    dict_vis = {
+        "img": img,
+        "width": width,
+        "height": height,
+        "tagged_df": {
+            "text": "",
+            "color": [0, 0, 0],
+        },
+    }
+
     ip_set = []
     lstm_set = []
     max_length_mat = DEFAULT_CONSEC_FRAMES
@@ -220,12 +230,8 @@ def extract_pose_detect_fall(img, model, args):
     )
     valid1_idxs, prediction = get_all_features(ip_set, lstm_set, model)
     text, color = activity_name(prediction + 5)
-    dict_vis = {
-        "tagged_df": {
-            "text": text,
-            "color": color,
-        },
-    }
+    dict_vis["tagged_df"]["text"] = text
+    dict_vis["tagged_df"]["color"] = color
     img = show_tracked_img(dict_vis, ip_set, num_matched)
 
     return img
