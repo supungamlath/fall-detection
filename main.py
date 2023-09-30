@@ -45,7 +45,6 @@ def handleImageSequence():
         tmp_dir = tempfile.TemporaryDirectory()
         with st.spinner("Converting to video..."):
             sequence_video_name = "sequence_video.mp4"
-            tmp_dir = tempfile.TemporaryDirectory()
             with zipfile.ZipFile(uploaded_zip, "r") as zip_ref:
                 zip_ref.extractall(tmp_dir.name)
 
