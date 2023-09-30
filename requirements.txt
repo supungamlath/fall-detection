@@ -1,3 +1,7 @@
+opencv-python-headless
+torch>=1.6.0
+torchvision>=0.7.0
+openpifpaf==0.12.9
 moviepy
 zipfile
 boto
@@ -10,8 +14,6 @@ idna
 kiwisolver
 matplotlib>=3.3.1
 numpy>=1.19.1
-opencv-python-headless
-openpifpaf==0.12.9
 pandas>=1.1.1
 Pillow>=7.2.0
 pyparsing
@@ -22,6 +24,4 @@ pytz
 requests
 scipy
 six
-torch>=1.6.0
-torchvision>=0.7.0
 urllib3==1.26.5
