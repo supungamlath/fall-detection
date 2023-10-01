@@ -5,16 +5,12 @@ import os
 import zipfile
 import moviepy.editor as moviepy
 from fall_detectors import VideoFallDetector, LiveFallDetector
-from streamlit_webrtc import WebRtcMode, webrtc_streamer
+from streamlit_webrtc import RTCConfiguration, WebRtcMode, webrtc_streamer
 
 
 def showVideo(video_name):
     try:
-        st_video = open(video_name, "rb")
-        video_bytes = st_video.read()
-        st.video(
-            video_bytes,
-        )
+        st.video(video_name)
 
     except OSError:
         """Error loading video file"""
@@ -36,6 +32,7 @@ def runFallDetector(video_name, fps):
 
 
 def handleImageSequence():
+    sequence_video_name = "sequence_video.mp4"
     uploaded_zip = st.file_uploader(
         "Upload a zip file containing .jpg or .png images", type=["zip"]
     )
@@ -45,7 +42,6 @@ def handleImageSequence():
 
         tmp_dir = tempfile.TemporaryDirectory()
         with st.spinner("Converting to video..."):
-            sequence_video_name = "sequence_video.mp4"
             with zipfile.ZipFile(uploaded_zip, "r") as zip_ref:
                 zip_ref.extractall(tmp_dir.name)
 
@@ -65,24 +61,30 @@ def handleImageSequence():
             images = [
                 img for img in imgs_list if img.endswith(".jpg") or img.endswith(".png")
             ]
-            frame = cv2.imread(os.path.join(dir, images[0]))
-            height, width, layers = frame.shape
 
-            video = cv2.VideoWriter(
-                sequence_video_name,
-                cv2.VideoWriter_fourcc(*"mp4v"),
-                fps,
-                (width, height),
-            )
+            try:
+                frame = cv2.imread(os.path.join(dir, images[0]))
+                height, width, layers = frame.shape
 
-            for image in images:
-                video.write(cv2.imread(os.path.join(dir, image)))
+                video = cv2.VideoWriter(
+                    sequence_video_name,
+                    cv2.VideoWriter_fourcc(*"mp4v"),
+                    fps,
+                    (width, height),
+                )
 
-            cv2.destroyAllWindows()
-            video.release()
-            tmp_dir.cleanup()
+                for image in images:
+                    video.write(cv2.imread(os.path.join(dir, image)))
+                st.success("Done!")
 
-        st.success("Done!")
+            except Exception as e:
+                st.error("Error converting images to video")
+                st.error(e)
+            finally:
+                # cv2.destroyAllWindows()
+                video.release()
+                tmp_dir.cleanup()
+
         showVideo(sequence_video_name)
         runFallDetector(sequence_video_name, fps)
 
@@ -132,12 +134,13 @@ def handleCamera():
     st.subheader("Live Fall Detection")
     flip_video = st.toggle("Flip Video")
     camera_detector.set_flip(flip_video)
+    RTC_CONFIGURATION = RTCConfiguration(
+        {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
+    )
     webrtc_ctx = webrtc_streamer(
         key="fall-detection",
         mode=WebRtcMode.SENDRECV,
-        rtc_configuration={
-            "iceServers": [{"urls": ["stun:stun3.l.google.com:19302"]}],
-        },
+        rtc_configuration=RTC_CONFIGURATION,
         video_frame_callback=camera_detector.process_frame,
         media_stream_constraints={"video": True, "audio": False},
         async_processing=True,
