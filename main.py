@@ -179,7 +179,7 @@ def main():
         Every year, approximately 37 million falls occur worldwide, often necessitating immediate medical attention. 
         For elderly individuals living alone, falls can be particularly dangerous, as they may be unable to call for help. 
             
-        For my semester project, I'm building a fall detection robot that can be deployed in any household, able to navigate autonomously and detect falls in real-time.
+        For my semester project, I'm building a real-time fall detection system that can be deployed with easily available hardware.
 
         This app was built as part of that project to test the fall detection method using Streamlit, Openpifpaf and PyTorch. 
         OpenPifPaf is a library that allows for real-time pose estimation. PyTorch is a deep learning library used to run a LSTM model that was pre-trained to detect falls.
