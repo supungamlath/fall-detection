@@ -167,7 +167,7 @@ def detect_with_lstm_mp(queue, args, event):
     return
 
 
-def extract_pose_detect_fall(img, model, args):
+def extract_pose_detect_fall(img, model, args, ip_set, lstm_set, num_matched):
     width, height, width_height = resize(img)
     processor_singleton = Processor(width_height, args)
 
@@ -199,6 +199,7 @@ def extract_pose_detect_fall(img, model, args):
             "keypoints": keyp[0],
             "up_hist": uh,
             "lo_hist": lh,
+            "time": time.time(),
             "box": box,
         }
         for keyp, uh, lh, box in zip(anns, uhist_list, lhist_list, bbox_list)
@@ -219,14 +220,9 @@ def extract_pose_detect_fall(img, model, args):
         },
     }
 
-    ip_set = []
-    lstm_set = []
-    max_length_mat = DEFAULT_CONSEC_FRAMES
-    num_matched = 0
-
     kp_frame = keypoint_sets
     num_matched, new_num, indxs_unmatched = match_ip(
-        ip_set, kp_frame, lstm_set, num_matched, max_length_mat
+        ip_set, kp_frame, lstm_set, num_matched
     )
     valid1_idxs, prediction = get_all_features(ip_set, lstm_set, model)
     text, color = activity_name(prediction + 5)
