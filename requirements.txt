@@ -2,7 +2,7 @@ opencv-python-headless
 torch>=1.6.0
 torchvision>=0.7.0
 openpifpaf==0.12.9
-moviepy
+moviepy==1.0.3
 streamlit-webrtc
 boto
 certifi
