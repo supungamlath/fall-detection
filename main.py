@@ -114,7 +114,7 @@ def handleVideoFile():
                 f.write(uploaded_video.read())  # save video to disk
             clip = moviepy.VideoFileClip(video_name)
             clip.write_videofile("input_video.mp4", fps=fps)
-            os.remove(video_name)
+            # os.remove(video_name)
 
         st.success("Done!")
         showVideo("input_video.mp4")
@@ -135,7 +135,7 @@ def handleCamera():
     flip_video = st.toggle("Flip Video")
     camera_detector.set_flip(flip_video)
     RTC_CONFIGURATION = RTCConfiguration(
-        {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
+        {"iceServers": [{"urls": ["stun:stun1.l.google.com:19302"]}]}
     )
     webrtc_ctx = webrtc_streamer(
         key="fall-detection",
