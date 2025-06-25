@@ -1,6 +1,7 @@
 __pycache__/
 .vscode/
 images/
+videos/
 sequence_video.mp4
 input_video.mp4
 fall_detected_video.mp4
