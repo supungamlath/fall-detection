@@ -1,6 +1,6 @@
 # Fall Detection App
 
-A real-time fall detection system using pose estimation and deep learning, built with Streamlit, OpenPifPaf, and PyTorch.
+A real-time fall detection system using pose estimation and deep learning, built with Streamlit, OpenPifPaf, and PyTorch. See online demo at [https://fall-detection.streamlit.app](https://fall-detection.streamlit.app).
 
 ## Overview
 
@@ -42,7 +42,7 @@ This project provides a real-time fall detection system that can be deployed wit
 
 ## Usage
 
-Run the Streamlit app:
+Run the Streamlit app 
 ```sh
 streamlit run main.py
 ```
